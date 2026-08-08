@@ -131,17 +131,13 @@ app.get("/api/recipes", (req, res) => {
 app.post("/api/login", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  
-console.log("LOGIN:", {
-  usuarioCoincide: username === ADMIN_USER,
-  longitudPasswordRecibida: password.length,
-  longitudPasswordConfigurada: ADMIN_PASSWORD.length
-});
-  
+
   if (
     username === ADMIN_USER &&
     password === ADMIN_PASSWORD
   ) {
+    console.log("LOGIN CORRECTO");
+    
     req.session.authenticated = true;
 
     return res.json({
@@ -149,6 +145,8 @@ console.log("LOGIN:", {
     });
   }
 
+  console.log("LOGIN RECHAZADO");
+  
   return res.status(401).json({
     error: "Usuario o contraseña incorrectos."
   });
