@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Arte Culinario desde San Juan, Argentina."
+  >
+
+  <title>
+    Arte Culinario | San Juan
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+
+</head>
+
+<body>
+
+<header>
+
+  <a
+    class="logo"
+    href="/"
+  >
+    Arte<span>Culinario</span>
+  </a>
+
+  <nav>
+
+    <a href="#recetas">
+      Recetas
+    </a>
+
+    <a href="#sobre-mi">
+      Sobre mí
+    </a>
+
+    <a href="/admin">
+      Administrar
+    </a>
+
+  </nav>
+
+</header>
+
+
+<main>
+
+<section class="hero">
+
+  <div class="hero-content">
+
+    <p class="eyebrow">
+      📍 San Juan, Argentina
+    </p>
+
+    <h1>
+      El arte de cocinar,
+      <em>a mi manera.</em>
+    </h1>
+
+    <p>
+      Recetas propias, creatividad
+      y pasión por la cocina.
+    </p>
+
+    <a
+      class="button"
+      href="#recetas"
+    >
+      Ver mis recetas
+    </a>
+
+  </div>
+
+</section>
+
+
+<section
+  id="recetas"
+  class="section"
+>
+
+  <div class="section-heading">
+
+    <div>
+
+      <p class="eyebrow">
+        Mi cocina
+      </p>
+
+      <h2>
+        Recetas
+      </h2>
+
+    </div>
+
+    <input
+      id="search"
+      type="search"
+      placeholder="Buscar receta..."
+      aria-label="Buscar receta"
+    >
+
+  </div>
+
+
+  <div
+    id="grid"
+    class="grid"
+  ></div>
+
+
+  <p
+    id="empty"
+    class="empty"
+  >
+    Todavía no hay recetas publicadas.
+    <br>
+    <strong>
+      Próximamente vas a encontrar
+      mis propias creaciones.
+    </strong>
+  </p>
+
+</section>
+
+
+<section
+  id="sobre-mi"
+  class="about"
+>
+
+  <div>
+
+    <p class="eyebrow">
+      Sobre el proyecto
+    </p>
+
+    <h2>
+      Una cocina con identidad.
+    </h2>
+
+    <p>
+      Este espacio nace para compartir
+      recetas propias y ayudar a otras
+      personas a aprender y disfrutar
+      de la cocina.
+    </p>
+
+    <p>
+      La idea es combinar creatividad,
+      gastronomía y la identidad de
+      San Juan.
+    </p>
+
+  </div>
+
+
+  <div class="about-card">
+
+    <span class="big-icon">
+      🍴
+    </span>
+
+    <h3>
+      Hecho desde San Juan
+    </h3>
+
+    <p>
+      Cada receta publicada forma parte
+      de mi propio recorrido culinario.
+    </p>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+
+  ©
+  <span id="year"></span>
+  Arte Culinario · San Juan, Argentina
+
+</footer>
+
+
+<script>
+
+const grid =
+  document.querySelector("#grid");
+
+const empty =
+  document.querySelector("#empty");
+
+const search =
+  document.querySelector("#search");
+
+let recipes = [];
+
+
+function escapeHtml(text) {
+
+  return String(text || "")
+    .replace(/[&<>"']/g, character => {
+
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      return entities[character];
+
+    });
+
+}
+
+
+async function loadRecipes() {
+
+  try {
+
+    const response =
+      await fetch("/api/recipes");
+
+    recipes =
+      await response.json();
+
+    renderRecipes();
+
+  } catch {
+
+    empty.hidden = false;
+
+    empty.innerHTML =
+      "No se pudieron cargar las recetas.";
+
+  }
+
+}
+
+
+function renderRecipes() {
+
+  const query =
+    search.value
+      .toLowerCase()
+      .trim();
+
+  const filtered =
+    recipes.filter(recipe => {
+
+      return (
+        recipe.title +
+        " " +
+        recipe.description
+      )
+        .toLowerCase()
+        .includes(query);
+
+    });
+
+
+  grid.innerHTML = "";
+
+
+  if (filtered.length === 0) {
+
+    empty.hidden = false;
+
+    if (recipes.length > 0) {
+
+      empty.innerHTML =
+        "No encontré recetas con esa búsqueda.";
+
+    } else {
+
+      empty.innerHTML = `
+        Todavía no hay recetas publicadas.
+        <br>
+        <strong>
+          Próximamente vas a encontrar
+          mis propias creaciones.
+        </strong>
+      `;
+
+    }
+
+    return;
+
+  }
+
+
+  empty.hidden = true;
+
+
+  filtered.forEach(recipe => {
+
+    const card =
+      document.createElement("a");
+
+    card.className =
+      "card";
+
+    card.href =
+      "/recipe.html?id=" +
+      encodeURIComponent(recipe.id);
+
+
+    const image =
+      recipe.image
+        ? `
+          <img
+            src="${recipe.image}"
+            alt="${escapeHtml(recipe.title)}"
+          >
+        `
+        : `
+          <div class="no-image">
+            🍴
+          </div>
+        `;
+
+
+    card.innerHTML = `
+
+      ${image}
+
+      <div class="card-body">
+
+        <h3>
+          ${escapeHtml(recipe.title)}
+        </h3>
+
+        <p>
+          ${escapeHtml(
+            recipe.description ||
+            "Receta propia"
+          )}
+        </p>
+
+      </div>
+
+    `;
+
+
+    grid.appendChild(card);
+
+  });
+
+}
+
+
+search.addEventListener(
+  "input",
+  renderRecipes
+);
+
+
+document.querySelector("#year")
+  .textContent =
+  new Date().getFullYear();
+
+
+loadRecipes();
+
+</script>
+
+</body>
+
+</html>
