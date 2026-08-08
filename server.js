@@ -131,7 +131,14 @@ app.get("/api/recipes", (req, res) => {
 app.post("/api/login", (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-
+  
+console.log("LOGIN:", {
+  usernameRecibido: username,
+  usuarioConfigurado: ADMIN_USER,
+  passwordRecibida: password ? "SI" : "NO",
+  passwordConfigurada: ADMIN_PASSWORD ? "SI" : "NO"
+});
+  
   if (
     username === ADMIN_USER &&
     password === ADMIN_PASSWORD
