@@ -140,6 +140,8 @@ app.post("/api/login", (req, res) => {
     
     req.session.authenticated = true;
 
+    console.log("SESION CREADA:", req.session.authenticated);
+    
     return res.json({
       ok: true
     });
