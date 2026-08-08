@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Receta | Arte Culinario
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="styles.css"
+  >
+
+</head>
+
+
+<body>
+
+<header>
+
+  <a
+    class="logo"
+    href="/"
+  >
+    Arte<span>Culinario</span>
+  </a>
+
+  <nav>
+
+    <a href="/">
+      Todas las recetas
+    </a>
+
+  </nav>
+
+</header>
+
+
+<main
+  id="content"
+  class="recipe-page"
+>
+
+  <p>
+    Cargando receta...
+  </p>
+
+</main>
+
+
+<script>
+
+const id =
+  new URLSearchParams(
+    window.location.search
+  ).get("id");
+
+
+function escapeHtml(text) {
+
+  return String(text || "")
+    .replace(/[&<>"']/g, character => {
+
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      };
+
+      return entities[character];
+
+    });
+
+}
+
+
+function formatText(text) {
+
+  return escapeHtml(text)
+    .replace(/\n/g, "<br>");
+
+}
+
+
+async function loadRecipe() {
+
+  const response =
+    await fetch("/api/recipes");
+
+  const recipes =
+    await response.json();
+
+  const recipe =
+    recipes.find(
+      item => item.id === id
+    );
+
+
+  if (!recipe) {
+
+    document.querySelector("#content")
+      .innerHTML = `
+
+        <h1>
+          Receta no encontrada
+        </h1>
+
+        <a
+          class="button"
+          href="/"
+        >
+          Volver a las recetas
+        </a>
+
+      `;
+
+    return;
+
+  }
+
+
+  document.title =
+    recipe.title +
+    " | Arte Culinario";
+
+
+  const image =
+    recipe.image
+      ? `
+        <img
+          class="recipe-image"
+          src="${recipe.image}"
+          alt="${escapeHtml(recipe.title)}"
+        >
+      `
+      : "";
+
+
+  document.querySelector("#content")
+    .innerHTML = `
+
+      ${image}
+
+      <p class="eyebrow">
+        Receta propia
+      </p>
+
+      <h1>
+        ${escapeHtml(recipe.title)}
+      </h1>
+
+      <p class="lead">
+        ${escapeHtml(
+          recipe.description
+        )}
+      </p>
+
+      <div class="meta">
+
+        ${
+          recipe.time
+            ? `⏱ ${escapeHtml(recipe.time)}`
+            : ""
+        }
+
+        ${
+          recipe.difficulty
+            ? ` · ${escapeHtml(recipe.difficulty)}`
+            : ""
+        }
+
+      </div>
+
+
+      <div class="columns">
+
+        <section>
+
+          <h2>
+            Ingredientes
+          </h2>
+
+          <div class="formatted">
+
+            ${formatText(
+              recipe.ingredients
+            )}
+
+          </div>
+
+        </section>
+
+
+        <section>
+
+          <h2>
+            Preparación
+          </h2>
+
+          <div class="formatted">
+
+            ${formatText(
+              recipe.instructions
+            )}
+
+          </div>
+
+        </section>
+
+      </div>
+
+    `;
+
+}
+
+
+loadRecipe();
+
+</script>
+
+</body>
+
+</html>
