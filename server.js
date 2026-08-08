@@ -133,10 +133,9 @@ app.post("/api/login", (req, res) => {
   const password = req.body.password;
   
 console.log("LOGIN:", {
-  usernameRecibido: username,
-  usuarioConfigurado: ADMIN_USER,
-  passwordRecibida: password ? "SI" : "NO",
-  passwordConfigurada: ADMIN_PASSWORD ? "SI" : "NO"
+  usuarioCoincide: username === ADMIN_USER,
+  longitudPasswordRecibida: password.length,
+  longitudPasswordConfigurada: ADMIN_PASSWORD.length
 });
   
   if (
