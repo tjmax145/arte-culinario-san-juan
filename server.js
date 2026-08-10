@@ -136,18 +136,12 @@ app.post("/api/login", (req, res) => {
     username === ADMIN_USER &&
     password === ADMIN_PASSWORD
   ) {
-    console.log("LOGIN CORRECTO");
-    
     req.session.authenticated = true;
-
-    console.log("SESION CREADA:", req.session.authenticated);
     
     return res.json({
       ok: true
     });
   }
-
-  console.log("LOGIN RECHAZADO");
   
   return res.status(401).json({
     error: "Usuario o contraseña incorrectos."
