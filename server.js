@@ -156,7 +156,7 @@ app.post("/api/login", (req, res) => {
 
 app.post("/api/logout", (req, res) => {
   req.session.destroy(() => {
-    res.json({
+    return res.json({
       ok: true
     });
   });
@@ -167,12 +167,7 @@ app.post("/api/logout", (req, res) => {
 ========================= */
 
 app.get("/api/me", (req, res) => {
-  res.json({
-    authenticated: !!req.session.authenticated
-  });
-  sessionID: req.sessionID
-
-  res.json({
+  return res.json({
     authenticated: !!req.session.authenticated
   });
 });
