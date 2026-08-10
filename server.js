@@ -174,6 +174,11 @@ app.get("/api/me", (req, res) => {
   res.json({
     authenticated: !!req.session.authenticated
   });
+  sessionID: req.sessionID
+
+  res.json({
+    authenticated: !!req.session.authenticated
+  });
 });
 
 /* =========================
